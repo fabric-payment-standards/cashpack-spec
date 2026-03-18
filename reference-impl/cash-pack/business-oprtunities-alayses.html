@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CashPack Protocol — Business Model Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --bg2: #f7f6f3;
+            --bg3: #f0ede8;
+            --text: #1a1917;
+            --text2: #6b6860;
+            --text3: #9c9a92;
+            --border: rgba(0, 0, 0, 0.10);
+            --border2: rgba(0, 0, 0, 0.18);
+            --info-bg: #e6f1fb;
+            --info-text: #185fa5;
+            --success-bg: #eaf3de;
+            --success-text: #3b6d11;
+            --warn-bg: #faeeda;
+            --warn-text: #854f0b;
+            --danger-bg: #fcebeb;
+            --danger-text: #a32d2d;
+            --accent: #1a1917;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1c1b19;
+                --bg2: #242320;
+                --bg3: #2c2b28;
+                --text: #e8e6df;
+                --text2: #9c9a92;
+                --text3: #6b6860;
+                --border: rgba(255, 255, 255, 0.10);
+                --border2: rgba(255, 255, 255, 0.18);
+                --info-bg: #042c53;
+                --info-text: #85b7eb;
+                --success-bg: #173404;
+                --success-text: #97c459;
+                --warn-bg: #412402;
+                --warn-text: #ef9f27;
+                --danger-bg: #501313;
+                --danger-text: #f09595;
+                --accent: #e8e6df;
+            }
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            border-left: 0.5px solid var(--border);
+            border-right: 0.5px solid var(--border);
+            min-height: 100vh;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 3rem 2.5rem 2rem;
+            border-bottom: 0.5px solid var(--border);
+            position: relative;
+        }
+
+        .hero-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text3);
+            margin-bottom: 0.75rem;
+            font-weight: 400;
+        }
+
+        .hero h1 {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: clamp(26px, 4vw, 40px);
+            font-weight: 400;
+            line-height: 1.15;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+        }
+
+        .hero-sub {
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--text2);
+            max-width: 620px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .meta-item {
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        .meta-item strong {
+            color: var(--text2);
+            font-weight: 500;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 1rem 2.5rem;
+            border-bottom: 0.5px solid var(--border);
+            background: var(--bg2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .filter-btn {
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 0.5px solid var(--border2);
+            background: transparent;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .filter-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--bg3);
+            color: var(--text3);
+            transition: inherit;
+        }
+
+        .filter-btn.active .count-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--bg);
+        }
+
+        /* Grid */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0;
+            background: var(--border);
+            border-top: none;
+        }
+
+        .section-divider {
+            grid-column: 1 / -1;
+            background: var(--bg2);
+            padding: 10px 2.5rem;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text3);
+            border-bottom: 0.5px solid var(--border);
+            font-weight: 500;
+        }
+
+        .model-card {
+            background: var(--bg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: background 0.12s;
+            position: relative;
+            border: none;
+        }
+
+        .model-card:hover {
+            background: var(--bg2);
+        }
+
+        .model-card.expanded {
+            background: var(--bg2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding-right: 24px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .card-title-group {
+            flex: 1;
+        }
+
+        .card-category {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text3);
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .novelty-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--info-text);
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .card-summary {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-weight: 400;
+        }
+
+        .tag-rev {
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .tag-risk {
+            background: var(--warn-bg);
+            color: var(--warn-text);
+        }
+
+        .tag-novel {
+            background: var(--info-bg);
+            color: var(--info-text);
+        }
+
+        .chevron {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.6rem;
+            width: 16px;
+            height: 16px;
+            color: var(--text3);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .model-card.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .expand-content {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 0.5px solid var(--border);
+        }
+
+        .model-card.expanded .expand-content {
+            display: block;
+        }
+
+        .expand-section {
+            margin-bottom: 14px;
+        }
+
+        .expand-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .expand-label {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text3);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .expand-text {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.65;
+        }
+
+        .expand-text strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 1.5rem 2.5rem;
+            border-top: 0.5px solid var(--border);
+            background: var(--bg2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: var(--text3);
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .footer-brand {
+            font-size: 11px;
+            color: var(--text3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 0.75rem 2.5rem;
+            border-bottom: 0.5px solid var(--border);
+            background: var(--bg2);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text2);
+        }
+
+        @media (max-width: 600px) {
+            .hero {
+                padding: 2rem 1.25rem 1.5rem;
+            }
+
+            .filter-bar {
+                padding: 0.75rem 1.25rem;
+            }
+
+            .section-divider {
+                padding: 8px 1.25rem;
+            }
+
+            .model-card {
+                padding: 1.25rem;
+            }
+
+            .footer {
+                padding: 1rem 1.25rem;
+            }
+
+            .legend {
+                padding: 0.75rem 1.25rem;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+        <div class="hero">
+            <p class="hero-eyebrow">CashPack Protocol · CPP-1.0 · Business Model Analysis</p>
+            <h1>Revenue Opportunities <em>on top of</em><br>Digital Bearer Instruments</h1>
+            <p class="hero-sub">A structured review of 16 business models enabled by the CashPack Protocol — from
+                straightforward operator fee plays to novel instruments that weren't commercially viable before
+                privacy-preserving digital bearer cash existed.</p>
+            <div class="hero-meta">
+                <span class="meta-item"><strong>Protocol</strong> CPP-1.0 Draft</span>
+                <span class="meta-item"><strong>Date</strong> March 2026</span>
+                <span class="meta-item"><strong>Author</strong> Fabric Payment Standards Foundation</span>
+                <span class="meta-item"><strong>Models</strong> 16 across 4 categories</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="tag tag-rev" style="padding:2px 8px;">Primary revenue</span>
+                <span>Revenue stream type</span>
+            </div>
+            <div class="legend-item">
+                <span class="tag tag-risk" style="padding:2px 8px;">Complexity / risk</span>
+                <span>Key consideration</span>
+            </div>
+            <div class="legend-item">
+                <span class="tag tag-novel" style="padding:2px 8px;">First of kind</span>
+                <span>Novel model marker</span>
+            </div>
+            <div class="legend-item">
+                <span class="novelty-dot"></span>
+                <span>Not viable before CashPack</span>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterModels('all', this)">All <span class="count-badge"
+                    id="count-all"></span></button>
+            <button class="filter-btn" onclick="filterModels('core', this)">Core Operator <span class="count-badge"
+                    id="count-core"></span></button>
+            <button class="filter-btn" onclick="filterModels('banking', this)">Banking &amp; Payments <span
+                    class="count-badge" id="count-banking"></span></button>
+            <button class="filter-btn" onclick="filterModels('platform', this)">Platform &amp; Marketplace <span
+                    class="count-badge" id="count-platform"></span></button>
+            <button class="filter-btn" onclick="filterModels('novel', this)">Novel / Unorthodox <span
+                    class="count-badge" id="count-novel"></span></button>
+        </div>
+
+        <div class="models-grid" id="grid"></div>
+
+        <div class="footer">
+            <p class="footer-note">
+                Click any card to expand mechanics, revenue model, and strategic considerations.
+                <span style="color:var(--info-text)">&#9679;</span> marks models that were not commercially viable
+                before privacy-preserving digital bearer instruments.
+            </p>
+            <span class="footer-brand">CPP-1.0 · FPSF · Apache 2.0</span>
+        </div>
+
+    </div>
+
+    <script>
+const models = [
+  {
+    id: 1, category: "core", section: "Core Operator Revenue",
+    icon: "🏦",
+    title: "Issuance & Redemption Fee Model",
+    summary: "Charge a basis-point fee on every cash-pack issued and/or redeemed. The simplest, most defensible revenue line — structurally identical to how prepaid card networks earn.",
+    tags: [{l:"Primary revenue", c:"rev"}, {l:"Low complexity", c:"risk"}],
+    mechanics: "Operator takes 0.3–1.5% on issuance (debited from the principal's balance before locking) or a flat fee on redemption. Both sides can be combined with a floor fee for small amounts (e.g., min $0.10) to protect unit economics.",
+    revenue: "At $50 average instrument and 100,000 instruments/month, a 0.75% issuance fee generates ~$37,500 MRR with near-zero marginal cost after infrastructure.",
+    strategic: "This is the baseline. Every other model can stack on top of it. The fee must remain below the friction threshold that would push users to cash — empirically around 1–2% for low-value domestic transfers.",
+    novel: false
+  },
+  {
+    id: 2, category: "core", section: "Core Operator Revenue",
+    icon: "⏳",
+    title: "Float Income (Locked Funds)",
+    summary: "Every issued cash-pack locks funds with the Operator for up to 90 days. That float is investable — and it is how Visa, PayPal, and every prepaid program earns its second revenue line.",
+    tags: [{l:"High margin", c:"rev"}, {l:"Scale-dependent", c:"risk"}],
+    mechanics: "The Operator holds aggregate locked balances in short-duration instruments (T-bills, overnight repo, HQLA). At 5% annualised on a $10M average float, that is ~$500k/year in investment income requiring no additional customer-facing product.",
+    revenue: "Float income scales linearly with outstanding instrument volume. At $100M locked float and 4.5% yield, net float income exceeds $4M/year — frequently the largest P&L line for mature prepaid operators.",
+    strategic: "Maximising float income incentivises longer instrument lifetimes. The 90-day cap in CPP-1.0 is generous. Operators should monitor the tension between float income and user experience when instruments expire before redemption.",
+    novel: false
+  },
+  {
+    id: 3, category: "core", section: "Core Operator Revenue",
+    icon: "🔌",
+    title: "API-as-a-Service (Operator Platform)",
+    summary: "License the Operator role itself to businesses that want CashPack capabilities but lack a payment licence. You become the regulated rails; they build the product. Think Stripe, but for bearer instruments.",
+    tags: [{l:"SaaS recurring", c:"rev"}, {l:"Requires licence", c:"risk"}],
+    mechanics: "White-label your Operator endpoint. Customers (fintechs, retailers, platforms) integrate via your API. You issue instruments on their behalf under your regulatory umbrella and charge a monthly platform fee plus per-instrument pricing.",
+    revenue: "Platform fee $2k–$20k/month depending on volume tier, plus $0.05–0.25 per instrument. 50 B2B customers at $5k/month = $3M ARR before per-instrument revenue.",
+    strategic: "This is the highest-leverage model for a licensed financial institution already running the infrastructure. The marginal cost of adding a new B2B customer is near zero. Requires solid KYC delegation and liability frameworks.",
+    novel: false
+  },
+  {
+    id: 4, category: "banking", section: "Banking & Payments Integrations",
+    icon: "💳",
+    title: "Bank-Issued Cash-Pack as Premium Account Feature",
+    summary: "Retail banks can offer CashPack issuance as a privacy-tier account feature — a digital equivalent of the cashier's cheque that resonates with privacy-conscious customers and differentiates the product.",
+    tags: [{l:"Account stickiness", c:"rev"}, {l:"NIM preserving", c:"risk"}],
+    mechanics: "CashPack issuance is gated to premium or private banking tiers (Gold/Platinum). Monthly account fee absorbs the cost; the bank earns on the float. Alternatively, offered as a fee-based add-on at $2–5 per instrument to all current account holders.",
+    revenue: "If 5% of a 1M customer base generates 2 instruments/month at $2 each, that is $200k MRR in pure fee revenue. Strategically, the value is in retention and reducing churn to neobanks.",
+    strategic: "The privacy angle is a genuine differentiator in a market where every neobank competes on cashback. 'Your transfers, your business' is a message with traction among the 35–55 demographic that banks are losing to fintechs.",
+    novel: false
+  },
+  {
+    id: 5, category: "banking", section: "Banking & Payments Integrations",
+    icon: "🌍",
+    title: "Privacy-Preserving Remittance Corridor",
+    summary: "For Phase 2 inter-Operator settlement, a bank or MSB can offer cross-border cash-pack transfers that expose only the sending and receiving banks — eliminating correspondent banking visibility into the chain.",
+    tags: [{l:"High-margin corridor", c:"rev"}, {l:"Phase 2 only", c:"risk"}],
+    mechanics: "Partner with one regulated Operator per target corridor. Sender's bank issues a cash-pack; recipient redeems through the partner Operator. Transfer fee: 1–2% (below Western Union's 4–7%). FX spread is the second revenue line.",
+    revenue: "The $800B+ global remittance market charges average fees of 6.2% (World Bank, 2023). A 1.5% corridor product on a $500M flow generates $7.5M/year per corridor at dramatically lower infrastructure cost than traditional correspondent banking.",
+    strategic: "This model requires Phase 2 inter-Operator extensions not yet in CPP-1.0, but is commercially compelling enough to justify early investment in bilateral settlement agreements with overseas counterparts.",
+    novel: false
+  },
+  {
+    id: 6, category: "banking", section: "Banking & Payments Integrations",
+    icon: "🏪",
+    title: "Merchant Acceptance Network",
+    summary: "Operators can build or join a merchant network that accepts cash-packs at point of sale — physical or digital. The Operator earns an interchange-like fee on every redemption at a network merchant.",
+    tags: [{l:"Network effects", c:"rev"}, {l:"Slow build", c:"risk"}],
+    mechanics: "Merchants integrate the /redeem endpoint. On each merchant redemption, the Operator deducts a settlement fee (0.5–1.5%) before crediting the merchant's account — similar to card interchange, but without the card network cut. Volume discounts incentivise adoption.",
+    revenue: "A network of 500 merchants with 200 transactions/month at $30 average and 1% fee = $300k MRR. A focused vertical such as gift vouchers for national retailers de-risks the initial build.",
+    strategic: "Unlike card networks, there are no routing rules — any Operator whose instruments a merchant accepts earns the fee. This creates a competitive open-network dynamic rather than a closed-loop one.",
+    novel: false
+  },
+  {
+    id: 7, category: "banking", section: "Banking & Payments Integrations",
+    icon: "🔒",
+    title: "Tokenized Deposit Wrapper",
+    summary: "Banks running tokenized deposit pilots (CBDC sandbox, stablecoin issuance) can use CashPack as the privacy layer on top of the token — gaining bearer-transfer capability without rewriting token infrastructure.",
+    tags: [{l:"B2B SaaS overlay", c:"rev"}, {l:"Regulatory approval", c:"risk"}],
+    mechanics: "The tokenized deposit is held in custody at the bank. The CashPack instrument wraps it, providing the bearer-transfer interface. The bank earns the token's yield; the CashPack layer earns an additional wrapper fee (25–50bps/year on wrapped value).",
+    revenue: "If a bank has $500M in tokenized deposits and wraps 10% in CashPack instruments, a 0.3% annual wrapper fee generates $150k/year with near-zero incremental cost.",
+    strategic: "Several central banks (BIS Innovation Hub, ECB digital euro project) are actively exploring programmable money with privacy properties. Being an early Operator on this standard positions a bank as the credible private-sector partner when regulatory frameworks mature.",
+    novel: false
+  },
+  {
+    id: 8, category: "platform", section: "Platform & Marketplace Models",
+    icon: "🎁",
+    title: "Corporate Gift & Voucher Platform",
+    summary: "Issue cash-packs as corporate gift instruments — sent by HR, marketing, or sales teams to employees, customers, or prospects. The transferability makes them dramatically more attractive than fixed-merchant gift cards.",
+    tags: [{l:"B2B SaaS", c:"rev"}, {l:"Proven market", c:"risk"}],
+    mechanics: "Corporate buyer purchases packs in bulk via a self-serve dashboard. Packs are denominated in cash (not loyalty points), transferable, and redeemable at any accepting merchant or via bank transfer. Operator earns 2–4% margin on face value at issuance.",
+    revenue: "The global corporate gifting market is ~$242B (IMARC Group, 2023). A niche slice — digital cash gifts for tech companies — at $50k average contract and 3% margin yields $1.5k per customer. 500 enterprise customers = $750k/year. Float compounds this.",
+    strategic: "Key differentiator vs. Amazon Business or Ramp: the recipient can pass the instrument on as a genuine gift. Privacy is a secondary benefit that resonates in HR where employees are aware employers can monitor spend on corporate gift cards.",
+    novel: false
+  },
+  {
+    id: 9, category: "platform", section: "Platform & Marketplace Models",
+    icon: "⚖️",
+    title: "Escrow-as-a-Service for Marketplaces",
+    summary: "Any two-sided marketplace (freelance, real estate, M&A) that needs trust-in-transfer can use a cash-pack as programmable escrow — funds locked by buyer, released to seller, with the Operator as neutral third party.",
+    tags: [{l:"Transaction fee", c:"rev"}, {l:"Liability design", c:"risk"}],
+    mechanics: "Buyer issues a cash-pack to an escrow address. Seller completes delivery. Marketplace signals the Operator to transfer bearer rights to the seller (or return to buyer on dispute). Operator charges 0.5–1% of the escrowed amount.",
+    revenue: "Freelance platforms process $400B+ globally. Capturing 0.01% of that flow at 0.75% yields $300k. The real opportunity is in mid-market M&A and real estate earnouts where escrow fees are 0.25–1% on million-dollar transactions.",
+    strategic: "The legal risk is in the dispute resolution layer — who signals the Operator to transfer or return funds? Operators should build this as a partnership with licensed escrow attorneys rather than as an independent legal service.",
+    novel: false
+  },
+  {
+    id: 10, category: "platform", section: "Platform & Marketplace Models",
+    icon: "🪙",
+    title: "Anonymous Payroll Advance (Earned Wage Access)",
+    summary: "Employers can fund cash-packs for shift workers to access earned wages before payday — without the advance being visible in employer payment logs. Workers get privacy on how and when they access liquidity.",
+    tags: [{l:"Recurring B2B2C", c:"rev"}, {l:"Labour law review", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Employer pre-funds a pool. Workers request advances via app (authenticated to Operator, not employer). Operator issues cash-packs; employer sees aggregate utilisation only, not per-worker transactions. Operator earns $2–5 per advance.",
+    revenue: "Earned wage access processes ~$9.5B in the US annually (CFPB, 2023) and is growing 20%+/year. A privacy-preserving layer commands a premium — $4/advance with 10M advances/year = $40M in fee revenue at scale.",
+    strategic: "The privacy framing is a genuine labour market advantage: workers are more likely to use advances they know their employer cannot track. This directly addresses the primary reason workers cite for avoiding employer-sponsored EWA.",
+    novel: true
+  },
+  {
+    id: 11, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "🕵️",
+    title: "Whistleblower & Source Protection Payments",
+    summary: "Investigative journalism outlets, law firms, and NGOs need to compensate sources without creating a payment record. Cash-packs solve this — the Operator knows the funding institution, not the ultimate recipient.",
+    tags: [{l:"Mission-aligned niche", c:"rev"}, {l:"Reputational risk", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Journalism fund issues cash-packs to anonymous source identifiers known only to the editor. Source redeems via any bank account. The fund is the KYC-verified principal; the source redeems as a new customer with standard Operator KYC at redemption. No mid-chain record exists.",
+    revenue: "Subscription model: $500–2,000/month for a 'protected source payments' product tier. 200 NGOs and media organisations = $1.2M ARR. Low transaction volume, but the reputational positioning and press coverage are worth multiples of that in brand value.",
+    strategic: "This model is only viable with CPP-1.0's disposable key and intermediate bearer architecture. Existing payment rails (wire, PayPal) expose the transaction. The Operator should seek legal counsel on non-disclosure obligations and journalist shield law alignment.",
+    novel: true
+  },
+  {
+    id: 12, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "📜",
+    title: "Digital Bearer Bond Issuance Platform",
+    summary: "The CashPack instrument generalises directly to bearer bonds. A regulated Operator can issue cash-packs representing bond entitlements — enabling private secondary market trading without on-ledger transfers at each hop.",
+    tags: [{l:"High-value instruments", c:"rev"}, {l:"Securities licence", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Bond issuer locks proceeds in escrow. Operator issues cash-packs denominated in bond units. Holders can transfer (renew) to new investors privately. At maturity, the final holder redeems against escrow. The renewal chain provides a complete audit trail for settlement.",
+    revenue: "Operator earns 10–50bps on issuance (standard bond structuring fee) plus 5–10bps per secondary transfer. On a $100M bond with 10 average secondary trades, that is $100k issuance + $50k in transfer fees per bond.",
+    strategic: "Regulated bearer bonds were abolished in most jurisdictions in the 1980s–90s due to money laundering concerns. CPP-1.0's edge-KYC model (principal and redeemer identified; intermediates private) reintroduces the economic function under a compliant structure. This is a genuine legal-financial innovation.",
+    novel: true
+  },
+  {
+    id: 13, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "💊",
+    title: "Healthcare Payment Privacy Layer",
+    summary: "In the US, payment records are a de facto medical record. Patients paying for sensitive services face discrimination risk from insurer and employer payment data access. Cash-packs eliminate the payment trail.",
+    tags: [{l:"High willingness-to-pay", c:"rev"}, {l:"HIPAA alignment needed", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Patient purchases a cash-pack from their bank or an independent health privacy operator. Presents the pack to a participating provider as payment. Provider redeems through the Operator. Patient is identified only at issuance; provider sees a cryptographic identity — no insurer or employer learns of the payment.",
+    revenue: "1 in 5 Americans delays or avoids mental healthcare due to privacy concerns. A 1% fee on a $10k/year mental health spend = $100/patient/year. 100k patients = $10M in annual Operator fee revenue. A subscription 'health privacy plan' at $9.99/month is an alternative model.",
+    strategic: "This is potentially the most commercially significant model in this list. It is technically feasible today — the barrier is finding a health-sector Operator willing to navigate HIPAA coordination. One brave health-focused fintech gets first-mover advantage in a multi-billion dollar problem.",
+    novel: true
+  },
+  {
+    id: 14, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "🔁",
+    title: "Peer-to-Peer Privacy Gift Economy",
+    summary: "A consumer app where users send money as freely-transferable gift instruments that the recipient can use, regift, or save. The social layer is the product; Operator fees and float are the business.",
+    tags: [{l:"Consumer B2C", c:"rev"}, {l:"Virality dependent", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Mobile app with a social graph. Sender buys a 'gift pack' with a custom message or theme. Recipient can redeem to their bank, pass it to someone else with a new message, or split across multiple people. Network effects compound as packs travel multiple hops.",
+    revenue: "0.5% issuance fee + float + premium themes at $0.99 each. If each pack travels 3 hops on average, float duration extends to ~30 days. At 1M packs/month and $50 average, float alone at 5% = $208k/month. Freemium-to-premium conversion on themed packs adds $200–500k/month at scale.",
+    strategic: "This is the only model that makes bearer transferability itself the core product experience. No product like this exists today. The closest analogue — Venmo — is the opposite: every transaction is public by default. 'Private digital cash you can actually pass on' has never been a consumer product.",
+    novel: true
+  },
+  {
+    id: 15, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "🎭",
+    title: "Protocol Licensor & Certification Programme",
+    summary: "The Foundation — or any first-mover licensor — can operate a certification and licensing programme for Operators who wish to be CashPack-compatible, generating revenue from the standard itself.",
+    tags: [{l:"Licence & certification", c:"rev"}, {l:"Requires adoption", c:"risk"}],
+    mechanics: "Annual Operator certification ($10k–$50k/year) confirms CPP-1.0 compliance. A conformance test suite (SaaS, $2k/month) enables continuous validation. Operator listing in a public registry drives user trust and discovery. Technical support contracts at $5k/month.",
+    revenue: "50 certified Operators at $25k/year = $1.25M in certification revenue. 50 conformance SaaS contracts at $2k/month = $1.2M ARR. Total: $2.45M with minimal marginal cost once the test suite is built.",
+    strategic: "This is the 'picks and shovels' model during a gold rush. If CPP-1.0 achieves meaningful adoption, the licensor earns from every Operator in the ecosystem regardless of whether individual Operators succeed or fail.",
+    novel: false
+  },
+  {
+    id: 16, category: "novel", section: "Novel & Unorthodox Models",
+    icon: "🤝",
+    title: "Structured Settlement & Legal Payment Privacy",
+    summary: "Legal settlements — personal injury, employment discrimination, NDA payments — often require confidentiality. Cash-packs allow structured settlements to be paid without the amount or parties appearing beyond the two edges.",
+    tags: [{l:"High-value niche", c:"rev"}, {l:"Legal counsel required", c:"risk"}, {l:"First of kind", c:"novel"}],
+    mechanics: "Paying party (company or insurer) is the KYC-verified principal. Attorney or trustee receives the instrument as initial bearer. The instrument travels through a trust structure before final redemption by the plaintiff. Redemption is the only moment the Operator records the recipient.",
+    revenue: "Law firm subscription: $1,000–5,000/month for access to a 'confidential settlement payment' product. 500 US law firms subscribed = $3M ARR. Per-instrument premium of $100–500 for high-value settlements (>$500k) adds significant upside.",
+    strategic: "NDA-bound settlements represent a $10B+ annual market in the US alone. The primary competitor is physical cash. CashPack is strictly superior: auditable to the Operator, legally defensible, and no physical transport risk.",
+    novel: true
+  }
+];
+
+function getCategoryLabel(cat) {
+  return {core:'Core Operator', banking:'Banking & Payments', platform:'Platform & Marketplace', novel:'Novel Model'}[cat] || cat;
+}
+
+function getCategoryColor(cat) {
+  return {
+    core:'var(--info-bg)',
+    banking:'var(--success-bg)',
+    platform:'var(--warn-bg)',
+    novel:'var(--danger-bg)'
+  }[cat] || 'var(--bg2)';
+}
+
+function renderModels(filter) {
+  const grid = document.getElementById('grid');
+  const filtered = filter === 'all' ? models : models.filter(m => m.category === filter);
+  let lastSection = null;
+  let html = '';
+
+  filtered.forEach(m => {
+    if (m.section !== lastSection) {
+      html += `<div class="section-divider">${m.section}</div>`;
+      lastSection = m.section;
+    }
+    html += `
+    <div class="model-card" id="card-${m.id}" onclick="toggleCard(${m.id})">
+      <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="4 6 8 10 12 6"/>
+      </svg>
+      <div class="card-header">
+        <div class="card-icon" style="background:${getCategoryColor(m.category)}">${m.icon}</div>
+        <div class="card-title-group">
+          <div class="card-category">${m.novel ? '<span class="novelty-dot"></span>' : ''}${getCategoryLabel(m.category)}</div>
+          <div class="card-title">${m.title}</div>
+        </div>
+      </div>
+      <p class="card-summary">${m.summary}</p>
+      <div class="card-tags">${m.tags.map(t=>`<span class="tag tag-${t.c}">${t.l}</span>`).join('')}</div>
+      <div class="expand-content">
+        <div class="expand-section">
+          <div class="expand-label">How it works</div>
+          <div class="expand-text">${m.mechanics}</div>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">Revenue potential</div>
+          <div class="expand-text">${m.revenue}</div>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">Strategic note</div>
+          <div class="expand-text">${m.strategic}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  grid.innerHTML = html;
+  updateCounts();
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('expanded');
+}
+
+function filterModels(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderModels(filter);
+}
+
+function updateCounts() {
+  document.getElementById('count-all').textContent = models.length;
+  ['core','banking','platform','novel'].forEach(c => {
+    const el = document.getElementById('count-' + c);
+    if (el) el.textContent = models.filter(m => m.category === c).length;
+  });
+}
+
+renderModels('all');
+    </script>
+</body>
+
+</html>
