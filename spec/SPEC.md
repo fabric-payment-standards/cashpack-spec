@@ -5,8 +5,9 @@ description: The normative CashPack Protocol specification — CPP-1.0. Data str
 version: 1.0.0
 status: Draft
 date: 2026-03-04
-author: "Adalton Reis <reis@stablecoinstack.org>"
-organization: Stablecoin Stack Foundation
+author: "Adalton Reis <reis@fabricpaymentstandards.org>"
+contact:  contact@fabricpaymentstandards.org
+organization: Fabric Payment Standards Foundation
 license: Apache License 2.0
 ---
 
@@ -19,23 +20,6 @@ license: Apache License 2.0
 
 ## Document Metadata
 
-| Field | Value |
-|---|---|
-| **Document ID** | FPSF-CPP-001 |
-| **Title** | CashPack Protocol |
-| **Version** | 1.0.0 |
-| **Status** | Draft |
-| **Date** | 2026-03-15 |
-| **Author(s)** | Adalton Reis — [reis@fabricpaymentstandards.org](mailto:reis@fabricpaymentstandards.org) |
-| **Reviewers** | — |
-| **Organisation** | Fabric Payment Standards Foundation |
-| **Specification Family** | CashPack Protocol (CPP) |
-| **Canonical URL** | `https://fabricpaymentstandards.org/specs/cashpack/spec` |
-| **Repository** | `https://github.com/fabric-payment-standards/cashpack-spec` |
-| **Contact** | [contact@fabricpaymentstandards.org](mailto:contact@fabricpaymentstandards.org) |
-| **Licence** | Apache License 2.0 |
-
----
 
 ## Scope
 
